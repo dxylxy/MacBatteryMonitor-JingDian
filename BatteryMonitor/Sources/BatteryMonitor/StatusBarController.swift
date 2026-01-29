@@ -57,14 +57,49 @@ class AppCPUChartWindow: NSWindow {
     }
 }
 
-/// 应用 CPU 曲线视图
+/// 应用 CPU 曲线视图（支持悬停交互）
 class AppCPUChartView: NSView {
     private var chartData: [(time: Date, cpuPercent: Double)] = []
     private var appName: String = ""
+    private var trackingArea: NSTrackingArea?
+    private var mouseX: CGFloat? = nil
     
     func updateData(_ data: [(time: Date, cpuPercent: Double)], appName: String) {
         self.chartData = data
         self.appName = appName
+        needsDisplay = true
+    }
+    
+    override var isFlipped: Bool { false }
+    
+    override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        window?.acceptsMouseMovedEvents = true
+        updateTrackingAreas()
+    }
+    
+    override func updateTrackingAreas() {
+        super.updateTrackingAreas()
+        if let existing = trackingArea {
+            removeTrackingArea(existing)
+        }
+        trackingArea = NSTrackingArea(
+            rect: bounds,
+            options: [.mouseMoved, .mouseEnteredAndExited, .activeAlways],
+            owner: self,
+            userInfo: nil
+        )
+        addTrackingArea(trackingArea!)
+    }
+    
+    override func mouseMoved(with event: NSEvent) {
+        let point = convert(event.locationInWindow, from: nil)
+        mouseX = point.x
+        needsDisplay = true
+    }
+    
+    override func mouseExited(with event: NSEvent) {
+        mouseX = nil
         needsDisplay = true
     }
     
@@ -89,6 +124,11 @@ class AppCPUChartView: NSView {
         
         // 绘制坐标轴标签
         drawAxisLabels(in: chartRect)
+        
+        // 绘制悬停指示线和数值
+        if let mx = mouseX, mx >= chartRect.minX && mx <= chartRect.maxX {
+            drawHoverIndicator(at: mx, in: chartRect, context: context)
+        }
     }
     
     private func drawGrid(in rect: NSRect, context: CGContext) {
@@ -224,23 +264,148 @@ class AppCPUChartView: NSView {
             displayText.draw(at: NSPoint(x: x - size.width / 2, y: 2), withAttributes: attrs)
         }
     }
+    
+    /// 绘制悬停指示线和数值
+    private func drawHoverIndicator(at x: CGFloat, in rect: NSRect, context: CGContext) {
+        guard chartData.count > 1 else { return }
+        
+        let now = Date()
+        let hoursAgo48 = now.addingTimeInterval(-172800)
+        let timeRange = now.timeIntervalSince(hoursAgo48)
+        let maxCPU = max(chartData.map { $0.cpuPercent }.max() ?? 10, 5)
+        
+        // 计算鼠标位置对应的时间
+        let ratio = (x - rect.minX) / rect.width
+        let hoverTime = hoursAgo48.addingTimeInterval(timeRange * Double(ratio))
+        
+        // 查找最近的数据点
+        var closestPoint: (time: Date, cpuPercent: Double)? = nil
+        var minDistance: TimeInterval = .infinity
+        
+        for point in chartData {
+            let distance = abs(point.time.timeIntervalSince(hoverTime))
+            if distance < minDistance {
+                minDistance = distance
+                closestPoint = point
+            }
+        }
+        
+        guard let point = closestPoint else { return }
+        
+        // 阈值检查：如果鼠标位置离最近的数据点超过 30 分钟，则不显示
+        if minDistance > 1800 { return }
+        
+        // 绘制垂直指示线
+        context.setStrokeColor(NSColor.systemBlue.withAlphaComponent(0.8).cgColor)
+        context.setLineWidth(1.5)
+        context.setLineDash(phase: 0, lengths: [4, 2])
+        context.move(to: CGPoint(x: x, y: rect.minY))
+        context.addLine(to: CGPoint(x: x, y: rect.maxY))
+        context.strokePath()
+        context.setLineDash(phase: 0, lengths: [])
+        
+        // 计算曲线上的 Y 坐标
+        let curveY = rect.minY + rect.height * CGFloat(point.cpuPercent / maxCPU)
+        
+        // 绘制交叉点圆圈
+        let circleRect = NSRect(x: x - 4, y: curveY - 4, width: 8, height: 8)
+        context.setFillColor(NSColor.systemBlue.cgColor)
+        context.fillEllipse(in: circleRect)
+        context.setStrokeColor(NSColor.white.cgColor)
+        context.setLineWidth(1.5)
+        context.strokeEllipse(in: circleRect)
+        
+        // 绘制悬停信息框
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MM/dd HH:mm"
+        let timeStr = formatter.string(from: point.time)
+        let valueStr = String(format: "%.1f%%", point.cpuPercent)
+        let infoText = "\(timeStr)\n\(valueStr)"
+        
+        let attrs: [NSAttributedString.Key: Any] = [
+            .font: NSFont.systemFont(ofSize: 10, weight: .medium),
+            .foregroundColor: NSColor.white
+        ]
+        let textSize = infoText.size(withAttributes: attrs)
+        
+        // 信息框位置（在指示线旁边）
+        var boxX = x + 8
+        if boxX + textSize.width + 12 > rect.maxX {
+            boxX = x - textSize.width - 20
+        }
+        let boxY = curveY - textSize.height / 2 - 4
+        
+        let boxRect = NSRect(x: boxX, y: boxY, width: textSize.width + 12, height: textSize.height + 8)
+        
+        // 绘制背景
+        context.setFillColor(NSColor.black.withAlphaComponent(0.75).cgColor)
+        let boxPath = NSBezierPath(roundedRect: boxRect, xRadius: 4, yRadius: 4)
+        boxPath.fill()
+        
+        // 绘制文本
+        infoText.draw(at: NSPoint(x: boxX + 6, y: boxY + 4), withAttributes: attrs)
+    }
 }
 
-/// 电池曲线图视图 - 显示 48 小时电量变化
+/// 电池曲线图视图 - 显示 48 小时电量变化（支持横向滚动和悬停交互）
 class BatteryChartView: NSView {
     private var chartData: [(time: Date, percentage: Int, isCharging: Bool)] = []
+    private var trackingArea: NSTrackingArea?
+    private var mouseX: CGFloat? = nil  // 鼠标 X 坐标（用于绘制指示线）
+    
+    // 内容宽度倍数（相对于可见宽度）
+    private let contentWidthMultiplier: CGFloat = 2.5
     
     func updateData(_ data: [(time: Date, percentage: Int, isCharging: Bool)]) {
         self.chartData = data
         needsDisplay = true
     }
     
+    override var isFlipped: Bool { false }
+    
+    override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        // 关键：菜单窗口默认不接收 mouseMoved 事件，必须显式开启
+        window?.acceptsMouseMovedEvents = true
+        
+        // 重新添加追踪区域确保生效
+        updateTrackingAreas()
+    }
+    
+    override func updateTrackingAreas() {
+        super.updateTrackingAreas()
+        if let existing = trackingArea {
+            removeTrackingArea(existing)
+        }
+        trackingArea = NSTrackingArea(
+            rect: bounds,
+            options: [.mouseMoved, .mouseEnteredAndExited, .activeAlways],
+            owner: self,
+            userInfo: nil
+        )
+        addTrackingArea(trackingArea!)
+    }
+    
+    override func mouseMoved(with event: NSEvent) {
+        let point = convert(event.locationInWindow, from: nil)
+        mouseX = point.x
+        needsDisplay = true
+    }
+    
+    override func mouseExited(with event: NSEvent) {
+        mouseX = nil
+        needsDisplay = true
+    }
+    
+    override func scrollWheel(with event: NSEvent) {
+        // 传递给父视图处理滚动
+        super.scrollWheel(with: event)
+    }
+    
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
         
         guard let context = NSGraphicsContext.current?.cgContext else { return }
-        
-        // 不填充背景，保持透明与菜单一致
         
         let padding: CGFloat = 40
         let chartRect = NSRect(
@@ -258,6 +423,11 @@ class BatteryChartView: NSView {
         
         // 绘制坐标轴标签
         drawAxisLabels(in: chartRect)
+        
+        // 绘制悬停指示线和数值
+        if let mx = mouseX, mx >= chartRect.minX && mx <= chartRect.maxX {
+            drawHoverIndicator(at: mx, in: chartRect, context: context)
+        }
     }
     
     private func drawGrid(in rect: NSRect, context: CGContext) {
@@ -384,7 +554,6 @@ class BatteryChartView: NSView {
         
         // X 轴标签 (时间)
         let now = Date()
-        let calendar = Calendar.current
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm"
         
@@ -410,6 +579,87 @@ class BatteryChartView: NSView {
             let size = timeStr.size(withAttributes: attrs)
             displayText.draw(at: NSPoint(x: x - size.width / 2, y: 2), withAttributes: attrs)
         }
+    }
+    
+    /// 绘制悬停指示线和数值
+    private func drawHoverIndicator(at x: CGFloat, in rect: NSRect, context: CGContext) {
+        guard chartData.count > 1 else { return }
+        
+        let now = Date()
+        let hoursAgo48 = now.addingTimeInterval(-172800)
+        let timeRange = now.timeIntervalSince(hoursAgo48)
+        
+        // 计算鼠标位置对应的时间
+        let ratio = (x - rect.minX) / rect.width
+        let hoverTime = hoursAgo48.addingTimeInterval(timeRange * Double(ratio))
+        
+        // 查找最近的数据点
+        var closestPoint: (time: Date, percentage: Int, isCharging: Bool)? = nil
+        var minDistance: TimeInterval = .infinity
+        
+        for point in chartData {
+            let distance = abs(point.time.timeIntervalSince(hoverTime))
+            if distance < minDistance {
+                minDistance = distance
+                closestPoint = point
+            }
+        }
+        
+        guard let point = closestPoint else { return }
+        
+        // 阈值检查：如果鼠标位置离最近的数据点超过 30 分钟，则不显示
+        if minDistance > 1800 { return }
+        
+        // 绘制垂直指示线
+        context.setStrokeColor(NSColor.systemOrange.withAlphaComponent(0.8).cgColor)
+        context.setLineWidth(1.5)
+        context.setLineDash(phase: 0, lengths: [4, 2])
+        context.move(to: CGPoint(x: x, y: rect.minY))
+        context.addLine(to: CGPoint(x: x, y: rect.maxY))
+        context.strokePath()
+        context.setLineDash(phase: 0, lengths: [])
+        
+        // 计算曲线上的 Y 坐标
+        let curveY = rect.minY + rect.height * CGFloat(point.percentage) / 100
+        
+        // 绘制交叉点圆圈
+        let circleRect = NSRect(x: x - 4, y: curveY - 4, width: 8, height: 8)
+        context.setFillColor(NSColor.systemOrange.cgColor)
+        context.fillEllipse(in: circleRect)
+        context.setStrokeColor(NSColor.white.cgColor)
+        context.setLineWidth(1.5)
+        context.strokeEllipse(in: circleRect)
+        
+        // 绘制悬停信息框
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MM/dd HH:mm"
+        let timeStr = formatter.string(from: point.time)
+        let valueStr = "\(point.percentage)%"
+        let chargingStr = point.isCharging ? " ⚡" : ""
+        let infoText = "\(timeStr)\n\(valueStr)\(chargingStr)"
+        
+        let attrs: [NSAttributedString.Key: Any] = [
+            .font: NSFont.systemFont(ofSize: 10, weight: .medium),
+            .foregroundColor: NSColor.white
+        ]
+        let textSize = infoText.size(withAttributes: attrs)
+        
+        // 信息框位置（在指示线旁边）
+        var boxX = x + 8
+        if boxX + textSize.width + 12 > rect.maxX {
+            boxX = x - textSize.width - 20
+        }
+        let boxY = curveY - textSize.height / 2 - 4
+        
+        let boxRect = NSRect(x: boxX, y: boxY, width: textSize.width + 12, height: textSize.height + 8)
+        
+        // 绘制背景
+        context.setFillColor(NSColor.black.withAlphaComponent(0.75).cgColor)
+        let boxPath = NSBezierPath(roundedRect: boxRect, xRadius: 4, yRadius: 4)
+        boxPath.fill()
+        
+        // 绘制文本
+        infoText.draw(at: NSPoint(x: boxX + 6, y: boxY + 4), withAttributes: attrs)
     }
 }
 
@@ -910,6 +1160,12 @@ class StatusBarController: NSObject, NSMenuDelegate {
     }
     
     private func setupMenu() {
+        // 清理旧视图引用
+        liveViews.removeAll()
+        currentAppViews.removeAll()
+        appRankingViews.removeAll()
+        appHistoryItems.removeAll()
+        
         menu = NSMenu()
         menu.delegate = self
         menu.autoenablesItems = false
@@ -980,22 +1236,12 @@ class StatusBarController: NSObject, NSMenuDelegate {
             energyHistorySubmenu.addItem(item)
         }
         
-        // 保留旧的小时选项作为"更多"子菜单
+        // 保留旧的小时选项作为"更多"子菜单 -> 已移除，保持清爽
+        /* 
         energyHistorySubmenu.addItem(NSMenuItem.separator())
         let moreHistoryItem = NSMenuItem(title: LocalizedString("menu.more_history", comment: ""), action: nil, keyEquivalent: "")
-        let moreHistorySubmenu = NSMenu()
-        
-        for hours in [1, 4, 8, 12, 24] {
-            let title = String(format: LocalizedString("menu.past_hours", comment: ""), hours)
-            let periodItem = NSMenuItem(title: title, action: nil, keyEquivalent: "")
-            periodItem.submenu = NSMenu()
-            periodItem.tag = hours
-            appHistoryItems.append(periodItem)
-            moreHistorySubmenu.addItem(periodItem)
-        }
-        
-        moreHistoryItem.submenu = moreHistorySubmenu
-        energyHistorySubmenu.addItem(moreHistoryItem)
+        ...
+        */
         
         appHeader.submenu = energyHistorySubmenu
         menu.addItem(appHeader)
@@ -1004,8 +1250,8 @@ class StatusBarController: NSObject, NSMenuDelegate {
         let currentHeader = NSMenuItem(title: LocalizedString("menu.current_active_apps", comment: ""), action: nil, keyEquivalent: "")
         currentAppsSubmenu = NSMenu()
         
-        // 预创建 30 个视图槽位
-        for _ in 0..<30 {
+        // 预创建 50 个视图槽位 (大幅增加显示数量)
+        for _ in 0..<50 {
             let view = LiveMenuItemView(frame: NSRect(x: 0, y: 0, width: 420, height: 22))
             view.text = ""
             currentAppViews.append(view)
@@ -1015,16 +1261,12 @@ class StatusBarController: NSObject, NSMenuDelegate {
             currentAppsSubmenu.addItem(item)
         }
         
-        // 显示更多按钮（使用自定义视图，点击后菜单不关闭）
+        // 移除"显示更多"按钮，直接展示较多数量
+        /*
         currentAppsSubmenu.addItem(NSMenuItem.separator())
         showMoreButtonView = ClickableMenuButtonView(frame: NSRect(x: 0, y: 0, width: 420, height: 22))
-        showMoreButtonView.text = LocalizedString("menu.show_more", comment: "")
-        showMoreButtonView.onClick = { [weak self] in
-            self?.toggleShowMoreCurrent()
-        }
-        let showMoreItem = NSMenuItem()
-        showMoreItem.view = showMoreButtonView
-        currentAppsSubmenu.addItem(showMoreItem)
+        ...
+        */
         
         currentHeader.submenu = currentAppsSubmenu
         menu.addItem(currentHeader)
@@ -1059,42 +1301,9 @@ class StatusBarController: NSObject, NSMenuDelegate {
         
         settingsMenu.addItem(NSMenuItem.separator())
         
-        // 导出能耗报告
-        let exportItem = NSMenuItem(title: LocalizedString("menu.export_report", comment: ""), action: nil, keyEquivalent: "")
-        let exportSubmenu = NSMenu()
+        // (已移除) 导出能耗报告
         
-        // CSV 导出选项
-        let csvHeader = NSMenuItem(title: LocalizedString("menu.export_csv", comment: ""), action: nil, keyEquivalent: "")
-        csvHeader.isEnabled = false
-        exportSubmenu.addItem(csvHeader)
-        
-        for hours in [1, 4, 12, 24] {
-            let title = String(format: LocalizedString("menu.past_hours", comment: ""), hours)
-            let item = NSMenuItem(title: "  \(title)", action: #selector(exportCSV(_:)), keyEquivalent: "")
-            item.target = self
-            item.tag = hours
-            exportSubmenu.addItem(item)
-        }
-        
-        exportSubmenu.addItem(NSMenuItem.separator())
-        
-        // JSON 导出选项
-        let jsonHeader = NSMenuItem(title: LocalizedString("menu.export_json", comment: ""), action: nil, keyEquivalent: "")
-        jsonHeader.isEnabled = false
-        exportSubmenu.addItem(jsonHeader)
-        
-        for hours in [1, 4, 12, 24] {
-            let title = String(format: LocalizedString("menu.past_hours", comment: ""), hours)
-            let item = NSMenuItem(title: "  \(title)", action: #selector(exportJSON(_:)), keyEquivalent: "")
-            item.target = self
-            item.tag = hours
-            exportSubmenu.addItem(item)
-        }
-        
-        exportItem.submenu = exportSubmenu
-        settingsMenu.addItem(exportItem)
-        
-        settingsMenu.addItem(NSMenuItem.separator())
+        // 语言切换
         
         // 语言切换
         let languageItem = NSMenuItem(title: LocalizedString("menu.language", comment: ""), action: nil, keyEquivalent: "")
@@ -1142,6 +1351,9 @@ class StatusBarController: NSObject, NSMenuDelegate {
     @objc private func handleClick(_ sender: NSStatusBarButton) {
         guard let event = NSApp.currentEvent else { return }
         
+        // 临时移除 action 以防止 performClick 导致递归调用
+        statusItem.button?.action = nil
+        
         if event.type == .rightMouseUp {
             // 右键点击：显示设置菜单
             statusItem.menu = settingsMenu
@@ -1153,6 +1365,9 @@ class StatusBarController: NSObject, NSMenuDelegate {
             statusItem.button?.performClick(nil)
             statusItem.menu = nil
         }
+        
+        // 恢复 action
+        statusItem.button?.action = #selector(handleClick(_:))
     }
     
     /// 显示关于对话框
@@ -1428,8 +1643,8 @@ class StatusBarController: NSObject, NSMenuDelegate {
         let topApps = apps.filter { $0.cpuPercent > 0 }
         let maxCPU = EnergyHistoryManager.shared.getMaxCPU()
         
-        // 默认显示 15 个，展开后显示最多 30 个
-        let displayCount = showAllCurrentApps ? min(30, topApps.count) : min(15, topApps.count)
+        // 默认显示 15 个，展开后显示最多 50 个
+        let displayCount = showAllCurrentApps ? min(50, topApps.count) : min(15, topApps.count)
         
         for (i, view) in currentAppViews.enumerated() {
             let menuItem = currentAppsSubmenu.items[i]
@@ -1444,16 +1659,7 @@ class StatusBarController: NSObject, NSMenuDelegate {
             }
         }
         
-        // 更新"显示更多"按钮
-        if topApps.count > 15 && !showAllCurrentApps {
-            showMoreButtonView.text = String(format: LocalizedString("menu.show_more_count", comment: ""), topApps.count - 15)
-            showMoreButtonView.isHidden = false
-        } else if showAllCurrentApps {
-            showMoreButtonView.text = LocalizedString("menu.collapse", comment: "")
-            showMoreButtonView.isHidden = false
-        } else {
-            showMoreButtonView.isHidden = true
-        }
+        // 注意: showMoreButtonView 已移除，现在默认展示 50 个应用
     }
     
     /// 显示应用 CPU 曲线弹窗
@@ -1679,7 +1885,7 @@ class StatusBarController: NSObject, NSMenuDelegate {
         let apps = EnergyHistoryManager.shared.getCachedCurrentApps()
         let topApps = apps.filter { $0.cpuPercent > 0 }
         let maxCPU = EnergyHistoryManager.shared.getMaxCPU()
-        let displayCount = showAllCurrentApps ? min(30, topApps.count) : min(15, topApps.count)
+        let displayCount = showAllCurrentApps ? min(50, topApps.count) : min(15, topApps.count)
         
         for (i, view) in currentAppViews.enumerated() {
             let menuItem = currentAppsSubmenu.items[i]
@@ -1694,12 +1900,7 @@ class StatusBarController: NSObject, NSMenuDelegate {
             }
         }
         
-        // 更新按钮文字
-        if showAllCurrentApps {
-            showMoreButtonView.text = LocalizedString("menu.collapse", comment: "")
-        } else if topApps.count > 15 {
-            showMoreButtonView.text = String(format: LocalizedString("menu.show_more_count", comment: ""), topApps.count - 15)
-        }
+        // 注意: showMoreButtonView 已移除
     }
     
     @objc private func toggleLaunchAtLogin(_ sender: NSMenuItem) {
@@ -1756,7 +1957,8 @@ class StatusBarController: NSObject, NSMenuDelegate {
     }
     
     @objc private func quit() {
-        EnergyHistoryManager.shared.saveHistory()
+        // 必须同步保存，否则应用会在此操作完成前终止
+        EnergyHistoryManager.shared.saveHistory(sync: true)
         backgroundTimer?.invalidate()
         liveTimer?.cancel()
         NSApplication.shared.terminate(nil)
