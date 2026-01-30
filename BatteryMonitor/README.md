@@ -1,6 +1,6 @@
 # 静•电 (Battery Monitor - JingDian)
 
-> 极致简约，静默守护。一款遵循现代审美主义的 macOS 菜单栏电池监控应用。
+> 极致简约，静默守护。一款遵循现代审美主义的 macOS **极致低功耗电池及应用监看工具**。
 
 
 [![License](https://img.shields.io/badge/license-MIT-black.svg)](LICENSE)

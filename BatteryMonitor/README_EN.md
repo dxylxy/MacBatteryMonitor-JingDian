@@ -1,6 +1,6 @@
 # Battery Monitor (Static)
 
-> Minimalist aesthetics, silent guardian. A modern macOS menu bar battery monitor application.
+> Minimalist aesthetics, silent guardian. An **ultra-low power battery & app monitoring tool** for macOS.
 
 
 [![License](https://img.shields.io/badge/license-MIT-black.svg)](LICENSE)
