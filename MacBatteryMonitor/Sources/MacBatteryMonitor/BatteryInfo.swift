@@ -732,6 +732,47 @@ class EnergyHistoryManager {
         
         return false
     }
+    
+    /// 判断进程是否看起来像用户应用程序（如游戏、独立可执行文件等）
+    /// 用于处理不在 NSWorkspace.runningApplications 中但实际是用户应用的情况
+    private func isLikelyUserApplication(_ name: String) -> Bool {
+        // 1. 名称长度检查：应用程序名称通常较短（不超过 30 字符）
+        guard name.count >= 2 && name.count <= 30 else { return false }
+        
+        // 2. 首字母大写通常是应用程序（如 Balatro, Steam, Discord 等）
+        //    但也要接受一些首字母小写的游戏名称
+        let firstChar = name.first!
+        let startsWithUppercase = firstChar.isUppercase
+        
+        // 3. 不包含特殊字符（系统进程常有下划线、点等）
+        let hasNoSystemPatterns = !name.contains("_") && 
+                                  !name.contains(".") && 
+                                  !name.hasPrefix("com") &&
+                                  !name.hasPrefix("org") &&
+                                  !name.hasPrefix("io")
+        
+        // 5. 名称中不含数字开头（系统进程有时以数字开头）
+        let doesNotStartWithDigit = !firstChar.isNumber
+        
+        // 如果首字母大写、无系统模式、不以数字开头，很可能是用户应用
+        if startsWithUppercase && hasNoSystemPatterns && doesNotStartWithDigit {
+            return true
+        }
+        
+        // 6. 一些知名的游戏平台和游戏（白名单补充）
+        let knownGames: Set<String> = [
+            "Balatro", "Steam", "steam_osx", "LOVE", "love",
+            "Godot", "godot", "Unity", "Unreal",
+            "minecraft", "Minecraft", "java", // Minecraft 通常通过 Java 运行
+            "wine", "Wine", "wine64", "wineserver" // Wine 游戏
+        ]
+        
+        if knownGames.contains(name) {
+            return true
+        }
+        
+        return false
+    }
 
     /// 将 Helper/子进程名称归并到主应用名称
     private func getAppName(from processName: String) -> String {
@@ -776,7 +817,7 @@ class EnergyHistoryManager {
         var appCPU: [String: (cpu: Double, pid: Int)] = [:]
         let now = Date()
         
-        // 构建白名单：仅包含 Dock 和 菜单栏中可见的应用程序
+        // 构建白名单：包含 Dock 和 菜单栏中可见的应用程序
         var allowedApps = Set<String>()
         // 始终包含自身
         allowedApps.insert("MacBatteryMonitor")
@@ -837,8 +878,13 @@ class EnergyHistoryManager {
             // 归并到主应用名称
             let appName = getAppName(from: rawName)
             
-            // 2. 严格白名单过滤：只显示运行中的用户应用
-            if !allowedApps.contains(appName) { continue }
+            // 2. 放宽白名单过滤：
+            //    - 如果在白名单中，直接允许
+            //    - 如果不在白名单中，检查是否看起来像用户应用（如游戏）
+            let isInWhitelist = allowedApps.contains(appName)
+            let looksLikeUserApp = isLikelyUserApplication(appName)
+            
+            if !isInWhitelist && !looksLikeUserApp { continue }
             
             // 获取进程任务信息
             var taskInfo = ProcTaskInfo()
