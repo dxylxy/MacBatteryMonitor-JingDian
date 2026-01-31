@@ -8,7 +8,12 @@
 [![Platform](https://img.shields.io/badge/platform-macOS%2013%2B-black.svg)]()
 [![Swift](https://img.shields.io/badge/swift-5.9-black.svg)]()
 
+
 [English](README_EN.md) | [中文](README.md)
+
+<div align="center">
+  <img src="BatteryMonitor/PromoImages/Desktop_Cover.png" width="100%" alt="Battery Monitor Banner" />
+</div>
 
 ---
 
@@ -31,8 +36,9 @@
 - **36小时历史**：自动记录过去 **36 小时**的应用能耗数据。
 - **能耗贡献占比**：不同于传统的 CPU 占用率，我们计算的是**能耗贡献百分比 (0-100%)**。这能更准确地反映某一时刻下，该应用占用了系统总耗电的比例。
 - **智能休眠检测**：自动检测系统休眠或关机时段，在图表中以灰色断点区域标识。
-<img width="45%" alt="2026-01-30_13-15-57" src="https://github.com/user-attachments/assets/ac3650b8-5867-4a58-9d79-cade37ecd8c9" />
-<img width="45%" alt="2026-01-30_03-30-34" src="https://github.com/user-attachments/assets/9b562019-6892-436c-be9c-32aa519fa076" />
+<div align="center">
+  <img src="BatteryMonitor/PromoImages/Mobile_Page2_Dark.png" width="45%" alt="Mobile Promo Dark" />
+</div>
 
 
 ### 3. 持久化数据追踪
