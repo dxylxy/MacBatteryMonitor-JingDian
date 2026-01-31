@@ -3,7 +3,7 @@ import subprocess
 import os
 
 # Create a simple battery icon using sips and iconutil
-app_path = "/Users/lyon/Documents/bluetooth Android/BatteryMonitor"
+app_path = "/Users/lyon/Documents/bluetooth Android/MacBatteryMonitor"
 iconset_path = os.path.join(app_path, "AppIcon.iconset")
 os.makedirs(iconset_path, exist_ok=True)
 

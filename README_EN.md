@@ -1,4 +1,4 @@
-# 静•电 (Battery Monitor - JingDian)
+# 静•电 (MacBatteryMonitor - JingDian)
 
 > Minimalist, silent guardian. An **ultra-low power battery and application monitoring tool** for macOS that follows modern aestheticism.
 
@@ -11,14 +11,14 @@
 [English](README_EN.md) | [中文](README.md)
 
 <div align="center">
-  <img src="BatteryMonitor/PromoImages/Desktop_Cover.png" width="100%" alt="Battery Monitor Banner" />
+  <img src="MacBatteryMonitor/PromoImages/Desktop_Cover.png" width="100%" alt="MacBatteryMonitor Banner" />
 </div>
 
 ---
 
 ## 📖 Overview
 
-**Battery Monitor** (JingDian) is a lightweight battery management tool designed specifically for macOS. Abandoning the complex interfaces of traditional monitoring software, it adopts a minimalist design language aimed at providing the most accurate and practical battery health and energy consumption data with minimal system resource usage.
+**MacBatteryMonitor** (JingDian) is a lightweight battery management tool designed specifically for macOS. Abandoning the complex interfaces of traditional monitoring software, it adopts a minimalist design language aimed at providing the most accurate and practical battery health and energy consumption data with minimal system resource usage.
 
 Whether for daily office work or mobile development, it helps you grasp your Mac's power status in real-time, precisely locate "power-draining" applications, and extend battery life.
 
@@ -31,7 +31,7 @@ Whether for daily office work or mobile development, it helps you grasp your Mac
 - **Time Remaining Estimation**: Real-time calculation of remaining usage time or time to full charge based on current power consumption.
 
 <div align="center">
-  <img src="BatteryMonitor/PromoImages/Mobile_Page3_Dark.png" width="45%" alt="Battery Details Promo" />
+  <img src="MacBatteryMonitor/PromoImages/Mobile_Page3_Dark.png" width="45%" alt="Battery Details Promo" />
 </div>
 
 ### 2. Precise Application Energy Analysis
@@ -40,7 +40,7 @@ Whether for daily office work or mobile development, it helps you grasp your Mac
 - **Energy Contribution Percentage**: Unlike traditional CPU usage rates, we calculate the **energy contribution percentage (0-100%)**. This more accurately reflects the proportion of total system power consumption used by an application at a given moment.
 - **Smart Sleep Detection**: Automatically detects system sleep or shutdown periods, identified by gray break areas in the chart.
 <div align="center">
-  <img src="BatteryMonitor/PromoImages/Mobile_Page2_Dark.png" width="45%" alt="Mobile Promo Dark" />
+  <img src="MacBatteryMonitor/PromoImages/Mobile_Page2_Dark.png" width="45%" alt="Mobile Promo Dark" />
 </div>
 
 
@@ -65,9 +65,9 @@ This project is developed entirely in native **Swift 5.9**, without relying on a
 ## 📥 Installation
 
 ### Method 1: Download Installer (Recommended)
-1. Visit the [Releases](https://github.com/dxylxy/BatteryMonitor-JingDian/releases) page.
+1. Visit the [Releases](https://github.com/dxylxy/MacBatteryMonitor-JingDian/releases) page.
 2. Download the latest version of `静•电.dmg`.
-3. Double-click the DMG file and drag `Battery Monitor` into the `Applications` folder.
+3. Double-click the DMG file and drag `MacBatteryMonitor` into the `Applications` folder.
 4. Launch the application.
 
 ### Method 2: Build from Source
@@ -75,8 +75,8 @@ If you are a developer or wish to compile it yourself:
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/dxylxy/BatteryMonitor-JingDian.git
-cd BatteryMonitor-JingDian
+git clone https://github.com/dxylxy/MacBatteryMonitor-JingDian.git
+cd MacBatteryMonitor-JingDian
 
 # 2. Run the package script
 ./package.sh

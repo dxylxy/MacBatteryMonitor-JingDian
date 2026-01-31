@@ -1,4 +1,4 @@
-# Battery Monitor (Static)
+# MacBatteryMonitor (Static)
 
 > Minimalist aesthetics, silent guardian. An **ultra-low power battery & app monitoring tool** for macOS.
 
@@ -12,7 +12,7 @@
 
 ## 📖 Overview
 
-**Battery Monitor** (Static) is a lightweight battery management tool designed specifically for macOS. Rejecting the cluttered interfaces of traditional monitoring software, it adopts a minimalist design language aimed at providing the most accurate and practical battery health and energy consumption data with minimal system resource usage.
+**MacBatteryMonitor** (Static) is a lightweight battery management tool designed specifically for macOS. Rejecting the cluttered interfaces of traditional monitoring software, it adopts a minimalist design language aimed at providing the most accurate and practical battery health and energy consumption data with minimal system resource usage.
 
 Whether for daily office work or mobile development, it helps you grasp your Mac's power status in real-time, accurately locate "energy-draining" apps, and extend battery life.
 
@@ -56,9 +56,9 @@ This project is developed entirely in native **Swift 5.9**, without reliance on 
 ## 📥 Installation
 
 ### Method 1: Download App (Recommended)
-1. Visit the [Releases](https://github.com/dxylxy/BatteryMonitor-JingDian/releases) page.
-2. Download the latest `Battery Monitor.dmg` (or `静•电.dmg`).
-3. Double-click the DMG file and drag `Battery Monitor` into the `Applications` folder.
+1. Visit the [Releases](https://github.com/dxylxy/MacBatteryMonitor-JingDian/releases) page.
+2. Download the latest `MacBatteryMonitor.dmg` (or `静•电.dmg`).
+3. Double-click the DMG file and drag `MacBatteryMonitor` into the `Applications` folder.
 4. Launch the app.
 
 ### Method 2: Build from Source
@@ -66,8 +66,8 @@ If you are a developer or wish to compile it yourself:
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/dxylxy/BatteryMonitor-JingDian.git
-cd BatteryMonitor-JingDian
+git clone https://github.com/dxylxy/MacBatteryMonitor-JingDian.git
+cd MacBatteryMonitor-JingDian
 
 # 2. Run the packaging script
 ./package.sh

@@ -51,7 +51,7 @@ def generate_iconset(source_image_path, app_path):
 
 if __name__ == "__main__":
     # Path to the new battery icon
-    source_image = "/Users/lyon/Documents/bluetooth Android/BatteryMonitor/AppIcon_new.png"
-    app_directory = "/Users/lyon/Documents/bluetooth Android/BatteryMonitor"
+    source_image = "/Users/lyon/Documents/bluetooth Android/MacBatteryMonitor/AppIcon_new.png"
+    app_directory = "/Users/lyon/Documents/bluetooth Android/MacBatteryMonitor"
     
     generate_iconset(source_image, app_directory)

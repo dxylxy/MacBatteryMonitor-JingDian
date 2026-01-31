@@ -22,14 +22,14 @@
 "menu.show_more_count" = "Show More (%d items)...";
 "menu.collapse" = "Collapse";
 "menu.reset_stats" = "Reset Statistics";
-"menu.about" = "About Battery Monitor";
+"menu.about" = "About MacBatteryMonitor";
 "menu.help" = "Help / GitHub";
 "menu.donate" = "Support / Donate";
 "menu.export_report" = "Export Energy Report";
 "menu.export_csv" = "Export as CSV";
 "menu.export_json" = "Export as JSON";
 "menu.launch_at_login" = "Launch at Login";
-"menu.quit" = "Quit Battery Monitor";
+"menu.quit" = "Quit MacBatteryMonitor";
 "menu.force_quit" = "Force Quit %@";
 "menu.force_quit_short" = "Force Quit";
 "menu.no_data" = "No Data (Run for a while)";
@@ -72,7 +72,7 @@
 "status.battery_info" = "Battery: %d / %d mAh (%d%%)";
 
 // Alerts
-"alert.about.title" = "Battery Monitor";
+"alert.about.title" = "MacBatteryMonitor";
 "alert.about.message" = "Version 1.0.0\n\nA simple macOS battery monitor tool.\nReal-time display of battery status and app energy consumption.";
 "alert.ok" = "OK";
 "alert.github" = "Go to GitHub";
@@ -109,7 +109,7 @@
 "json.error" = "Failed to generate JSON";
 
 // Welcome Guide
-"welcome.title" = "Welcome to Battery Monitor";
+"welcome.title" = "Welcome to MacBatteryMonitor";
 "welcome.message" = "This app runs in the menu bar and stays active in the background.\n\nFor the best experience, we recommend enabling:\n• Launch at Login - Automatically start the app when you log in.\n\nClick 'Enable Launch at Login' to set it up automatically.";
 "welcome.enable_launch" = "Enable Launch at Login";
 "welcome.later" = "Maybe Later";

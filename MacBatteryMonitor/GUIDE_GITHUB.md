@@ -1,4 +1,4 @@
-# 如何将 BatteryMonitor 上传到 GitHub
+# 如何将 MacBatteryMonitor 上传到 GitHub
 
 以下是将你的项目上传到 GitHub 的详细步骤：
 
@@ -11,7 +11,7 @@
 打开终端，进入项目目录（如果你还未在项目目录中）：
 
 ```bash
-cd "/Users/lyon/Documents/bluetooth Android/BatteryMonitor"
+cd "/Users/lyon/Documents/bluetooth Android/MacBatteryMonitor"
 ```
 
 初始化 Git 仓库：
@@ -33,14 +33,14 @@ git add .
 提交更改：
 
 ```bash
-git commit -m "Initial commit: Battery Monitor app source code"
+git commit -m "Initial commit: MacBatteryMonitor app source code"
 ```
 
 ## 4. 在 GitHub 上创建新仓库
 
 1. 登录 GitHub。
 2. 点击右上角的 **+** 号，选择 **New repository**。
-3. 仓库名称输入 `BatteryMonitor`（或其他你喜欢的名字）。
+3. 仓库名称输入 `MacBatteryMonitor`（或其他你喜欢的名字）。
 4. 保持 Public（公开）或 Private（私有）根据你的喜好。
 5. **不要**勾选 "Initialize this repository with a README/gitignore/license"（因为我们本地已经有了）。
 6. 点击 **Create repository**。
@@ -51,7 +51,7 @@ git commit -m "Initial commit: Battery Monitor app source code"
 
 ```bash
 # 将 GitHub 仓库添加为远程仓库 (请将 YOUR_USERNAME 替换为你的 GitHub 用户名)
-git remote add origin https://github.com/YOUR_USERNAME/BatteryMonitor.git
+git remote add origin https://github.com/YOUR_USERNAME/MacBatteryMonitor.git
 
 # 推送代码到主分支
 git branch -M main
@@ -68,9 +68,9 @@ git push -u origin main
 1. 下载并安装 [GitHub Desktop](https://desktop.github.com/)。
 2. 登录你的 GitHub 账号。
 3. 点击 "Add an Existing Repository from your Hard Drive..."。
-4. 选择你的 `BatteryMonitor` 文件夹。
+4. 选择你的 `MacBatteryMonitor` 文件夹。
 5. 点击 "Publish repository" 按钮即可一键上传。
 
 ### 方法 B：使用 SSH（推荐给开发者）
 如果你已经配置了 SSH keys，直接使用 SSH 地址添加远程仓库：
-`git remote add origin git@github.com:YOUR_USERNAME/BatteryMonitor.git`
+`git remote add origin git@github.com:YOUR_USERNAME/MacBatteryMonitor.git`

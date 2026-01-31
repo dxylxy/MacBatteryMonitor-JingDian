@@ -1,4 +1,4 @@
-# 静•电 (Battery Monitor - JingDian)
+# 静•电 (MacBatteryMonitor - JingDian)
 
 > 极致简约，静默守护。一款遵循现代审美主义的 macOS **极致低功耗电池及应用监看工具**。
 
@@ -7,13 +7,14 @@
 [![Platform](https://img.shields.io/badge/platform-macOS%2013%2B-black.svg)]()
 [![Swift](https://img.shields.io/badge/swift-5.9-black.svg)]()
 
+
 [English](README_EN.md) | [中文](README.md)
 
 ---
 
 ## 📖 应用概述
 
-**静•电** (Battery Monitor) 是一款专为 macOS 设计的轻量级电池管理工具。它摒弃了传统监控软件繁杂的界面，采用极简主义设计语言，旨在以最低的系统资源占用，提供最精准、实用的电池健康与能耗数据。
+**静•电** (MacBatteryMonitor) 是一款专为 macOS 设计的轻量级电池管理工具。它摒弃了传统监控软件繁杂的界面，采用极简主义设计语言，旨在以最低的系统资源占用，提供最精准、实用的电池健康与能耗数据。
 
 无论是日常办公还是移动开发，它都能帮你实时掌握 Mac 的电力状况，精准定位"偷电"应用，延长电池续航寿命。
 
@@ -56,7 +57,7 @@
 ## 📥 安装与配置
 
 ### 方式一：下载安装包 (推荐)
-1. 访问 [Releases](https://github.com/dxylxy/BatteryMonitor-JingDian/releases) 页面。
+1. 访问 [Releases](https://github.com/dxylxy/MacBatteryMonitor-JingDian/releases) 页面。
 2. 下载最新版本的 `静•电.dmg`。
 3. 双击打开 DMG 文件，将 `静•电` 拖入 `Applications` 文件夹。
 4. 启动应用即可。
@@ -66,8 +67,8 @@
 
 ```bash
 # 1. 克隆仓库
-git clone https://github.com/dxylxy/BatteryMonitor-JingDian.git
-cd BatteryMonitor-JingDian
+git clone https://github.com/dxylxy/MacBatteryMonitor-JingDian.git
+cd MacBatteryMonitor-JingDian
 
 # 2. 执行打包脚本
 ./package.sh

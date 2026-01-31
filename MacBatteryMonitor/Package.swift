@@ -2,14 +2,14 @@
 import PackageDescription
 
 let package = Package(
-    name: "BatteryMonitor",
+    name: "MacBatteryMonitor",
     platforms: [
         .macOS(.v13)
     ],
     targets: [
         .executableTarget(
-            name: "BatteryMonitor",
-            path: "Sources/BatteryMonitor"
+            name: "MacBatteryMonitor",
+            path: "Sources/MacBatteryMonitor"
         )
     ]
 )

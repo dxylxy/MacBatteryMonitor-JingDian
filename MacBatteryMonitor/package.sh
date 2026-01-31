@@ -26,7 +26,7 @@ mkdir -p "$APP_DIR/Contents/MacOS"
 mkdir -p "$APP_DIR/Contents/Resources"
 
 # 复制二进制文件
-cp .build/release/BatteryMonitor "$APP_DIR/Contents/MacOS/"
+cp .build/release/MacBatteryMonitor "$APP_DIR/Contents/MacOS/"
 
 # 生成 PkgInfo
 echo "APPL????" > "$APP_DIR/Contents/PkgInfo"
@@ -45,7 +45,7 @@ cat > "$APP_DIR/Contents/Info.plist" <<EOF
         <string>en</string>
     </array>
     <key>CFBundleExecutable</key>
-    <string>BatteryMonitor</string>
+    <string>MacBatteryMonitor</string>
     <key>CFBundleIconFile</key>
     <string>AppIcon</string>
     <key>CFBundleIdentifier</key>
@@ -59,7 +59,7 @@ cat > "$APP_DIR/Contents/Info.plist" <<EOF
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleShortVersionString</key>
-    <string>1.2.0</string>
+    <string>2.0.0</string>
     <key>CFBundleVersion</key>
     <string>1</string>
     <key>LSMinimumSystemVersion</key>

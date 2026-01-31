@@ -1,5 +1,5 @@
 [README.md](https://github.com/user-attachments/files/24955872/README.md)
-# 静•电 (Battery Monitor - JingDian)
+# 静•电 (MacBatteryMonitor - JingDian)
 
 > 极致简约，静默守护。一款遵循现代审美主义的 macOS **极致低功耗电池及应用监看工具**。
 
@@ -12,14 +12,14 @@
 [English](README_EN.md) | [中文](README.md)
 
 <div align="center">
-  <img src="BatteryMonitor/PromoImages/Desktop_Cover.png" width="100%" alt="Battery Monitor Banner" />
+  <img src="MacBatteryMonitor/PromoImages/Desktop_Cover.png" width="100%" alt="MacBatteryMonitor Banner" />
 </div>
 
 ---
 
 ## 📖 应用概述
 
-**静•电** (Battery Monitor) 是一款专为 macOS 设计的轻量级电池管理工具。它摒弃了传统监控软件繁杂的界面，采用极简主义设计语言，旨在以最低的系统资源占用，提供最精准、实用的电池健康与能耗数据。
+**静•电** (MacBatteryMonitor) 是一款专为 macOS 设计的轻量级电池管理工具。它摒弃了传统监控软件繁杂的界面，采用极简主义设计语言，旨在以最低的系统资源占用，提供最精准、实用的电池健康与能耗数据。
 
 无论是日常办公还是移动开发，它都能帮你实时掌握 Mac 的电力状况，精准定位"偷电"应用，延长电池续航寿命。
 
@@ -32,7 +32,7 @@
 - **剩余时间预估**：基于当前功耗实时计算剩余使用时间或充电所需时间。
 
 <div align="center">
-  <img src="BatteryMonitor/PromoImages/Mobile_Page3_Dark.png" width="45%" alt="Battery Details Promo" />
+  <img src="MacBatteryMonitor/PromoImages/Mobile_Page3_Dark.png" width="45%" alt="Battery Details Promo" />
 </div>
 
 ### 2. 精准应用能耗分析
@@ -41,7 +41,7 @@
 - **能耗贡献占比**：不同于传统的 CPU 占用率，我们计算的是**能耗贡献百分比 (0-100%)**。这能更准确地反映某一时刻下，该应用占用了系统总耗电的比例。
 - **智能休眠检测**：自动检测系统休眠或关机时段，在图表中以灰色断点区域标识。
 <div align="center">
-  <img src="BatteryMonitor/PromoImages/Mobile_Page2_Dark.png" width="45%" alt="Mobile Promo Dark" />
+  <img src="MacBatteryMonitor/PromoImages/Mobile_Page2_Dark.png" width="45%" alt="Mobile Promo Dark" />
 </div>
 
 
@@ -76,8 +76,8 @@
 
 ```bash
 # 1. 克隆仓库
-git clone https://github.com/dxylxy/BatteryMonitor-JingDian.git
-cd BatteryMonitor-JingDian
+git clone https://github.com/dxylxy/MacBatteryMonitor-JingDian.git
+cd MacBatteryMonitor-JingDian
 
 # 2. 执行打包脚本
 ./package.sh
