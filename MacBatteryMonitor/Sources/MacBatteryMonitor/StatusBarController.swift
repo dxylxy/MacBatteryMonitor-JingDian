@@ -1490,11 +1490,9 @@ class StatusBarController: NSObject, NSMenuDelegate {
         return nil
     }
     
-    /// 打开 GitHub 页面
+    /// 打开 GitHub 页面 (现在改为检查更新)
     @objc private func openGitHub() {
-        if let url = URL(string: "https://github.com/dxylxy/BatteryMonitor-JingDian") {
-            NSWorkspace.shared.open(url)
-        }
+        GitHubUpdater.shared.checkForUpdates(manual: true)
     }
     
     /// 显示打赏信息

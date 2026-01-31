@@ -73,7 +73,7 @@
 
 // Alerts
 "alert.about.title" = "MacBatteryMonitor";
-"alert.about.message" = "Version 2.1.0\n\nA modern, aesthetically pleasing macOS tool for extreme low-power battery and energy management.\nReal-time battery status and app energy usage to help you identify power-draining apps.";
+"alert.about.message" = "Version 2.2.0\n\nA modern, aesthetically pleasing macOS tool for extreme low-power battery and energy management.\nReal-time battery status and app energy usage to help you identify power-draining apps.";
 "alert.ok" = "OK";
 "alert.github" = "Go to GitHub";
 "alert.cancel" = "Cancel";
@@ -119,3 +119,13 @@
 "menu.language.system" = "Follow System";
 "menu.language.chinese" = "中文";
 "menu.language.english" = "English";
+
+// Updates
+"update.title" = "Update Available";
+"update.message" = "A new version %@ is available (Current version %@).\n\nRelease Notes:\n%@";
+"update.button.download" = "Download Now";
+"update.button.later" = "Maybe Later";
+"update.no_updates.title" = "Up to Date";
+"update.no_updates.message" = "You are currently running the latest version (%@).";
+"update.check_error.title" = "Update Check Failed";
+"update.check_error.message" = "Could not connect to GitHub to check for updates. Please try again later.";

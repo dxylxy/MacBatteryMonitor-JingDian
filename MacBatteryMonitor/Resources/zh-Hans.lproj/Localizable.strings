@@ -73,7 +73,7 @@
 
 // Alerts
 "alert.about.title" = "静•电";
-"alert.about.message" = "版本 2.1.0\n\n一款遵循现代审美主义的 macOS 极限低功耗电池及能耗管理工具。\n实时显示电池状态和应用能耗，助你精准定位\"偷电\"应用。";
+"alert.about.message" = "版本 2.2.0\n\n一款遵循现代审美主义的 macOS 极限低功耗电池及能耗管理工具。\n实时显示电池状态和应用能耗，助你精准定位\"偷电\"应用。";
 "alert.ok" = "确定";
 "alert.github" = "前往 GitHub";
 "alert.cancel" = "取消";
@@ -119,3 +119,13 @@
 "menu.language.system" = "跟随系统";
 "menu.language.chinese" = "中文";
 "menu.language.english" = "English";
+
+// Updates
+"update.title" = "发现新版本";
+"update.message" = "发现新版本 %@ (当前版本 %@)。\n\n更新内容：\n%@";
+"update.button.download" = "前往下载";
+"update.button.later" = "以后再说";
+"update.no_updates.title" = "已是最新版本";
+"update.no_updates.message" = "当前版本 (%@) 已是最新版本。";
+"update.check_error.title" = "检查更新失败";
+"update.check_error.message" = "无法连接到 GitHub 检查更新，请稍后重试。";
