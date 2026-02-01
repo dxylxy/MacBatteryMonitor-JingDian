@@ -59,7 +59,7 @@ cat > "$APP_DIR/Contents/Info.plist" <<EOF
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleShortVersionString</key>
-    <string>3.1.1</string>
+    <string>3.2.0</string>
     <key>CFBundleVersion</key>
     <string>1</string>
     <key>LSMinimumSystemVersion</key>
@@ -88,7 +88,9 @@ fi
 
 # 简单的 Ad-hoc 签名 (避免本地运行时出现权限问题)
 echo "🔏 签署应用..."
-# 清理扩展属性（修复 resource fork 错误）
+find "$APP_DIR" -name "._*" -delete
+find "$APP_DIR" -name ".DS_Store" -delete
+dot_clean -m "$APP_DIR" || true
 xattr -cr "$APP_DIR"
 codesign --force --deep --sign - "$APP_DIR"
 

@@ -605,6 +605,76 @@ class EnergyHistoryManager {
         return result
     }
     
+    /// 识别最近一次掉电区间（从最近时刻向前累积下降，遇到上升或充电即停止）
+    /// 返回开始时间、结束时间以及该区间的总掉电百分比
+    func getLastDischargeWindow(minDropPercent: Int = 5) -> (start: Date, end: Date, dropPercent: Int)? {
+        var window: (start: Date, end: Date, dropPercent: Int)? = nil
+        queue.sync {
+            guard batteryHistory.count > 1 else { return }
+            let endIndex = batteryHistory.count - 1
+            let endPoint = batteryHistory[endIndex]
+            var totalDrop = 0
+            var startIndex = endIndex
+            
+            var i = endIndex
+            while i > 0 {
+                let prev = batteryHistory[i - 1]
+                let curr = batteryHistory[i]
+                
+                if curr.isCharging || prev.percentage < curr.percentage {
+                    // 出现充电或电量回升，停止
+                    startIndex = i
+                    break
+                }
+                if prev.percentage > curr.percentage {
+                    totalDrop += (prev.percentage - curr.percentage)
+                }
+                startIndex = i - 1
+                i -= 1
+            }
+            
+            if totalDrop >= minDropPercent {
+                window = (start: batteryHistory[startIndex].time, end: endPoint.time, dropPercent: totalDrop)
+            }
+        }
+        return window
+    }
+    
+    /// 获取最近掉电区间内的应用排行（按该区间的掉电进行分摊）
+    func getLastDischargeRanking(minDropPercent: Int = 5, count: Int = 10) -> [(name: String, percentEstimate: Double, isRunning: Bool)] {
+        guard let window = getLastDischargeWindow(minDropPercent: minDropPercent) else {
+            return getTodayTopApps(count: count)
+        }
+        
+        var result: [(name: String, percentEstimate: Double, isRunning: Bool)] = []
+        queue.sync {
+            let start = window.start
+            let end = window.end
+            let drop = window.dropPercent
+            
+            let filteredRecords = records.filter { $0.timestamp >= start && $0.timestamp <= end }
+            var appCPU: [String: Double] = [:]
+            var totalCPU: Double = 0
+            
+            for record in filteredRecords {
+                if shouldIgnoreApp(record.name) { continue }
+                appCPU[record.name, default: 0] += record.cpuPercent
+                totalCPU += record.cpuPercent
+            }
+            
+            result = appCPU.map { name, cpu in
+                let cpuShare = totalCPU > 0 ? (cpu / totalCPU * 100) : 0
+                let percentEstimate = Double(drop) * cpuShare / 100
+                let running = runningProcesses.contains(name)
+                return (name, percentEstimate, running)
+            }
+            .filter { $0.name != "System" }
+            .sorted { $0.percentEstimate > $1.percentEstimate }
+            .prefix(count).map { $0 }
+        }
+        return result
+    }
+    
     func getTopApps(hours: Int, count: Int = 10) -> [(name: String, cpuShare: Double, mahEstimate: Double, percentEstimate: Double, isRunning: Bool)] {
         var result: [(name: String, cpuShare: Double, mahEstimate: Double, percentEstimate: Double, isRunning: Bool)] = []
         

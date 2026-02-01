@@ -36,6 +36,11 @@
 "menu.total_drain" = "总消耗: %d mAh (%d%%)";
 "menu.show_more_apps" = "▼ 显示更多...";
 "menu.today_app_ranking" = "今日应用耗电排行";
+"menu.ranking_mode" = "排行口径";
+"menu.ranking_mode.today" = "今日累计掉电";
+"menu.ranking_mode.last_discharge" = "最近掉电区间";
+"menu.ranking_title.today" = "今日应用耗电排行";
+"menu.ranking_title.last_discharge" = "最近掉电区间排行";
 "menu.more_history" = "更多历史记录...";
 
 // Battery Chart
@@ -73,7 +78,7 @@
 
 // Alerts
 "alert.about.title" = "静•电";
-"alert.about.message" = "版本 3.1.1\n\n一款遵循现代审美主义的 macOS 极限低功耗电池及能耗管理工具。\n实时显示电池状态和应用能耗，助你精准定位\"偷电\"应用。";
+"alert.about.message" = "版本 3.2.0\n\n一款遵循现代审美主义的 macOS 极限低功耗电池及能耗管理工具。\n实时显示电池状态和应用能耗，助你精准定位\"偷电\"应用。\n\n如需反馈 Bug 或需要帮助，请联系：tongyuliu@vip.qq.com";
 "alert.ok" = "确定";
 "alert.github" = "前往 GitHub";
 "alert.cancel" = "取消";
@@ -122,7 +127,7 @@
 
 // Updates
 "update.title" = "发现新版本";
-"update.message" = "发现新版本 %@ (当前版本 %@)。\n\n更新内容：\n%@";
+"update.message" = "发现新版本 %@ (当前版本 %@)。\n\n更新内容：\n%@\n\n也可通过网盘更新：\nhttps://pan.quark.cn/s/ebeda646fdfc?pwd=wVbm";
 "update.button.download" = "前往下载";
 "update.button.later" = "以后再说";
 "update.no_updates.title" = "已是最新版本";

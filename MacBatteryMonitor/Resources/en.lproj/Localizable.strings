@@ -36,6 +36,11 @@
 "menu.total_drain" = "Total Drain: %d mAh (%d%%)";
 "menu.show_more_apps" = "▼ Show More...";
 "menu.today_app_ranking" = "Today's App Energy Usage";
+"menu.ranking_mode" = "Ranking Mode";
+"menu.ranking_mode.today" = "Today's Drain";
+"menu.ranking_mode.last_discharge" = "Last Discharge Window";
+"menu.ranking_title.today" = "Today's App Energy Usage";
+"menu.ranking_title.last_discharge" = "Last Discharge Ranking";
 "menu.more_history" = "More History...";
 
 // Battery Chart
@@ -73,7 +78,7 @@
 
 // Alerts
 "alert.about.title" = "MacBatteryMonitor";
-"alert.about.message" = "Version 3.1.1\n\nA modern, aesthetically pleasing macOS tool for extreme low-power battery and energy management.\nReal-time battery status and app energy usage to help you identify power-draining apps.";
+"alert.about.message" = "Version 3.2.0\n\nA modern, aesthetically pleasing macOS tool for extreme low-power battery and energy management.\nReal-time battery status and app energy usage to help you identify power-draining apps.\n\nFor bug reports or help, contact: tongyuliu@vip.qq.com";
 "alert.ok" = "OK";
 "alert.github" = "Go to GitHub";
 "alert.cancel" = "Cancel";
@@ -122,7 +127,7 @@
 
 // Updates
 "update.title" = "Update Available";
-"update.message" = "A new version %@ is available (Current version %@).\n\nRelease Notes:\n%@";
+"update.message" = "A new version %@ is available (Current version %@).\n\nRelease Notes:\n%@\n\nYou can also update via cloud drive:\nhttps://pan.quark.cn/s/ebeda646fdfc?pwd=wVbm";
 "update.button.download" = "Download Now";
 "update.button.later" = "Maybe Later";
 "update.no_updates.title" = "Up to Date";

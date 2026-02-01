@@ -851,7 +851,7 @@ class AppRankingItemView: NSView {
         }
         
         // 3. 返回通用应用图标
-        return NSWorkspace.shared.icon(forFileType: "app")
+        return NSWorkspace.shared.icon(for: .application)
     }
     
     override func updateTrackingAreas() {
@@ -928,6 +928,13 @@ class ClickableMenuButtonView: NSView {
     private var isHovered = false
     var onClick: (() -> Void)?
     
+    var isSelected: Bool = false {
+        didSet {
+            label.font = NSFont.systemFont(ofSize: 13, weight: isSelected ? .semibold : .regular)
+            label.textColor = isSelected ? .labelColor : .secondaryLabelColor
+        }
+    }
+    
     var text: String = "" {
         didSet { label.stringValue = text }
     }
@@ -972,7 +979,7 @@ class ClickableMenuButtonView: NSView {
     override func mouseExited(with event: NSEvent) {
         isHovered = false
         layer?.backgroundColor = nil
-        label.textColor = .labelColor
+        label.textColor = isSelected ? .labelColor : .secondaryLabelColor
     }
     
     override func mouseUp(with event: NSEvent) {
@@ -1064,7 +1071,7 @@ class LiveMenuItemView: NSView {
         }
         
         // 3. 返回通用应用图标
-        return NSWorkspace.shared.icon(forFileType: "app")
+        return NSWorkspace.shared.icon(for: .application)
     }
 }
 
@@ -1151,6 +1158,11 @@ class AppHistoryMenuItemView: NSView, NSMenuDelegate {
 
 /// 菜单栏控制器
 class StatusBarController: NSObject, NSMenuDelegate {
+    private enum RankingMode: String {
+        case today
+        case lastDischarge
+    }
+    
     private var statusItem: NSStatusItem!
     private var menu: NSMenu!
     private var backgroundTimer: Timer?
@@ -1172,9 +1184,14 @@ class StatusBarController: NSObject, NSMenuDelegate {
     private var batteryChartView: BatteryChartView!
     private var appRankingViews: [AppRankingItemView] = []
     private lazy var appCPUChartWindow: AppCPUChartWindow = AppCPUChartWindow()
+    private var rankingMode: RankingMode = .today
+    private var rankingHeaderItem: NSMenuItem?
+    private var rankingModeTodayView: ClickableMenuButtonView?
+    private var rankingModeLastDischargeView: ClickableMenuButtonView?
     
     override init() {
         super.init()
+        rankingMode = loadRankingMode()
         setupStatusBar()
         setupMenu()
         setupSettingsMenu()
@@ -1301,10 +1318,37 @@ class StatusBarController: NSObject, NSMenuDelegate {
         
         energyHistorySubmenu.addItem(NSMenuItem.separator())
         
+        let rankingModeHeader = NSMenuItem(title: LocalizedString("menu.ranking_mode", comment: ""), action: nil, keyEquivalent: "")
+        rankingModeHeader.isEnabled = false
+        energyHistorySubmenu.addItem(rankingModeHeader)
+        
+        let rankingTodayItem = NSMenuItem()
+        let rankingTodayView = ClickableMenuButtonView(frame: NSRect(x: 0, y: 0, width: 380, height: 22))
+        rankingTodayView.onClick = { [weak self] in
+            self?.setRankingModeToday()
+        }
+        rankingTodayItem.view = rankingTodayView
+        energyHistorySubmenu.addItem(rankingTodayItem)
+        rankingModeTodayView = rankingTodayView
+        
+        let rankingLastItem = NSMenuItem()
+        let rankingLastView = ClickableMenuButtonView(frame: NSRect(x: 0, y: 0, width: 380, height: 22))
+        rankingLastView.onClick = { [weak self] in
+            self?.setRankingModeLastDischarge()
+        }
+        rankingLastItem.view = rankingLastView
+        energyHistorySubmenu.addItem(rankingLastItem)
+        rankingModeLastDischargeView = rankingLastView
+        
+        updateRankingModeMenuState()
+        energyHistorySubmenu.addItem(NSMenuItem.separator())
+        
         // 今日应用耗电排行标题
-        let rankingHeader = NSMenuItem(title: LocalizedString("menu.today_app_ranking", comment: ""), action: nil, keyEquivalent: "")
+        let rankingHeader = NSMenuItem(title: LocalizedString("menu.ranking_title.today", comment: ""), action: nil, keyEquivalent: "")
         rankingHeader.isEnabled = false
         energyHistorySubmenu.addItem(rankingHeader)
+        rankingHeaderItem = rankingHeader
+        updateRankingHeaderTitle()
         
         // 预创建 15 个应用排行菜单项（每个带子菜单显示 CPU 曲线）
         for _ in 0..<15 {
@@ -1776,11 +1820,18 @@ class StatusBarController: NSObject, NSMenuDelegate {
     
     /// 更新今日应用耗电排行
     private func updateAppRanking() {
-        let apps = EnergyHistoryManager.shared.getTodayTopApps(count: 15)
+        let apps: [(name: String, percentEstimate: Double, isRunning: Bool)]
+        switch rankingMode {
+        case .today:
+            apps = EnergyHistoryManager.shared.getTodayTopApps(count: 15)
+        case .lastDischarge:
+            apps = EnergyHistoryManager.shared.getLastDischargeRanking(minDropPercent: 5, count: 15)
+        }
+        updateRankingHeaderTitle()
         
         for (i, view) in appRankingViews.enumerated() {
             // 获取包含该视图的菜单项（跳过标题和图表项）
-            let menuItemIndex = i + 3  // 图表项 + 分隔线 + 标题
+            let menuItemIndex = i + 7  // 图表项 + 分隔线 + 排行口径标题 + 两个选项 + 分隔线 + 标题
             guard menuItemIndex < energyHistorySubmenu.items.count else { continue }
             let menuItem = energyHistorySubmenu.items[menuItemIndex]
             
@@ -2002,6 +2053,54 @@ class StatusBarController: NSObject, NSMenuDelegate {
         }
         
         // 注意: showMoreButtonView 已移除
+    }
+    
+    @objc private func setRankingModeToday() {
+        rankingMode = .today
+        saveRankingMode()
+        updateRankingModeMenuState()
+        updateRankingHeaderTitle()
+        updateAppRanking()
+    }
+    
+    @objc private func setRankingModeLastDischarge() {
+        rankingMode = .lastDischarge
+        saveRankingMode()
+        updateRankingModeMenuState()
+        updateRankingHeaderTitle()
+        updateAppRanking()
+    }
+    
+    private func updateRankingModeMenuState() {
+        let todayTitle = LocalizedString("menu.ranking_mode.today", comment: "")
+        let lastTitle = LocalizedString("menu.ranking_mode.last_discharge", comment: "")
+        let todaySelected = rankingMode == .today
+        let lastSelected = rankingMode == .lastDischarge
+        rankingModeTodayView?.isSelected = todaySelected
+        rankingModeLastDischargeView?.isSelected = lastSelected
+        rankingModeTodayView?.text = (todaySelected ? "● " : "○ ") + todayTitle
+        rankingModeLastDischargeView?.text = (lastSelected ? "● " : "○ ") + lastTitle
+    }
+    
+    private func updateRankingHeaderTitle() {
+        switch rankingMode {
+        case .today:
+            rankingHeaderItem?.title = LocalizedString("menu.ranking_title.today", comment: "")
+        case .lastDischarge:
+            rankingHeaderItem?.title = LocalizedString("menu.ranking_title.last_discharge", comment: "")
+        }
+    }
+    
+    private func loadRankingMode() -> RankingMode {
+        if let raw = UserDefaults.standard.string(forKey: "rankingMode"),
+           let mode = RankingMode(rawValue: raw) {
+            return mode
+        }
+        return .today
+    }
+    
+    private func saveRankingMode() {
+        UserDefaults.standard.set(rankingMode.rawValue, forKey: "rankingMode")
     }
     
     @objc private func toggleLaunchAtLogin(_ sender: NSMenuItem) {
