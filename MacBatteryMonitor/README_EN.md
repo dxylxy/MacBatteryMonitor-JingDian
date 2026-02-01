@@ -1,6 +1,6 @@
 # MacBatteryMonitor (Static)
 
-> Minimalist aesthetics, silent guardian. An **ultra-low power battery & app monitoring tool** for macOS.
+> Minimalist aesthetics, silent guardian. An **ultra‑low power battery & app energy intelligence tool** for macOS.
 
 [![License](https://img.shields.io/badge/license-MIT-black.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-macOS%2013%2B-black.svg)]()
@@ -12,90 +12,90 @@
 
 ## 📖 Overview
 
-**MacBatteryMonitor** (Static) is a lightweight battery management tool designed specifically for macOS. Rejecting the cluttered interfaces of traditional monitoring software, it adopts a minimalist design language aimed at providing the most accurate and practical battery health and energy consumption data with minimal system resource usage.
+**MacBatteryMonitor** is a lightweight macOS energy intelligence tool. It avoids cluttered dashboards and focuses on what matters: **how long the battery will last, what is draining it, and why**.
 
-Whether for daily office work or mobile development, it helps you grasp your Mac's power status in real-time, accurately locate "energy-draining" apps, and extend battery life.
+It compresses battery curves, app energy ranking, and insight‑oriented views into a single menu‑bar surface, ideal for commuters, developers, and power users who care about every percent.
 
-## ✨ Core Features
+## ✨ Highlights
 
-### 1. Deep Battery Monitoring
-- **Real-time Data**: Accurately displays current capacity, charge/discharge power (W), amperage (mA), voltage (V), and battery temperature.
-- **Visualized Curve**: View the **last 48 hours** of battery trend with a **smooth Bezier curve**, making power drops and charging phases (highlighted in green) instantly recognizable.
-- **Health Management**: Visually presents battery health, cycle count, and design capacity comparison.
-- **Time Estimates**: Real-time calculation of remaining usage time or time to full charge based on current power consumption.
+### 1) Battery At‑a‑Glance
+- **Real‑time Metrics**: capacity, charge/discharge power (W), amperage (mA), voltage (V), temperature.
+- **48‑Hour Curve**: smooth Bezier line with charging segments highlighted.
+- **Health View**: cycles, design capacity, and health percentage.
+- **Time Estimates**: dynamic remaining time or time‑to‑full.
 
-### 2. Precise App Energy Analysis
-- **Live Ranking**: Instantly refreshes the list of apps with the highest CPU usage, helping you spot high-energy processes immediately.
-- **36-Hour History**: Automatically records app energy consumption data for the past **36 hours**.
-- **Energy Contribution %**: Instead of raw CPU usage, we calculate the **Energy Contribution Percentage (0-100%)**. This accurately reflects how much a specific app contributes to total system power draw at any given moment.
-- **Smart Gap Detection**: Automatically detects sleep or idle periods, represented by distinct indicators in the charts.
+### 2) App Energy Intelligence
+- **Live Ranking**: second‑level refresh for the hottest apps.
+- **36‑Hour History**: persistent per‑app energy timeline.
+- **Energy Contribution Curve**: contribution to total drain, not raw CPU percent.
+- **Smart Gap Detection**: sleep/idle windows annotated for clean charts.
+
+### 3) Flexible Ranking Modes
+- **Today’s Total Drain**: distributes today’s battery drop across apps.
+- **Last Discharge Window**: focuses only on the most recent continuous drain.
+- **Menu‑side Toggle**: switch modes without closing the menu.
 
 <p align="center">
   <img src="应用展示/2026-01-30_03-30-34.png" width="45%" />
   <img src="应用展示/2026-01-30_13-15-57.png" width="45%" />
 </p>
 
-### 3. Persistent Data Tracking
-- **Auto-Save**: Historical energy data is automatically restored after app exit or restart; records are never lost.
-- **Periodic Backup**: Automatically backs up data every 5 minutes in the background to prevent accidental loss.
+### 4) Data That Persists
+- **Auto‑Restore**: history is kept across restarts.
+- **5‑Minute Backup**: safe background snapshots.
+- **Export**: CSV / JSON for deeper analysis.
 
-### 4. Extreme Performance & Experience
-- **Silent Operation**: Average CPU usage **< 0.1%** and memory usage **< 20MB** when running in the background.
-- **Smart Refresh**: Refreshes every second when the menu is open, and automatically enters ultra-low power mode (60s/interval) when closed.
-- **Multi-language Support**: Native support for Simplified Chinese and English, with options to follow system settings or switch manually.
+### 5) Ultra‑Light Experience
+- **Silent Operation**: CPU avg < 0.1%, memory < 20MB.
+- **Smart Refresh**: 1s when open, 60s when closed.
+- **Multi‑Language**: Simplified Chinese & English.
+
+## 🧠 Why You’ll Love It
+- Instantly understand why battery drops accelerate
+- Zero dashboard fatigue, zero noise
+- Accurate energy insights in a single click
+- Learn your Mac’s true power behavior over time
 
 ## 🛠 Technical Architecture
 
-This project is developed entirely in native **Swift 5.9**, without reliance on any large third-party libraries, ensuring the app remains lightweight and efficient.
+Built in native **Swift 5.9** without heavy dependencies for maximum efficiency.
 
-- **User Interface**: Native macOS menu bar interface built on **AppKit**.
-- **Battery Core**: Communicates directly with hardware using the low-level **IOKit** framework to fetch the most accurate sensor data.
-- **Process Monitoring**: Retrieves process information via system-level BSD commands (`sysctl`/`ps`) and filters system daemons using intelligent algorithms.
-- **Data Persistence**: Uses the `Codable` protocol combined with JSON serialization for lightweight file storage.
+- **User Interface**: AppKit native menu‑bar UI
+- **Battery Core**: IOKit hardware sensor access
+- **Process Monitoring**: system sampling + intelligent filtering
+- **Data Persistence**: Codable + JSON lightweight storage
 
 ## 📥 Installation
 
 ### Method 1: Download App (Recommended)
-1. Visit the [Releases](https://github.com/dxylxy/MacBatteryMonitor-JingDian/releases) page.
-2. Download the latest `MacBatteryMonitor.dmg` (or `静•电.dmg`).
-3. Double-click the DMG file and drag `MacBatteryMonitor` into the `Applications` folder.
-4. Launch the app.
+1. Visit [Releases](https://github.com/dxylxy/MacBatteryMonitor-JingDian/releases)
+2. Download the latest `静•电.dmg`
+3. Drag it into `Applications`
+4. Launch and enjoy
 
 ### Method 2: Build from Source
-If you are a developer or wish to compile it yourself:
-
 ```bash
-# 1. Clone the repository
 git clone https://github.com/dxylxy/MacBatteryMonitor-JingDian.git
 cd MacBatteryMonitor-JingDian
-
-# 2. Run the packaging script
 ./package.sh
-
-# 3. Install
-# After building, find the generated DMG package in the dist/ directory
 open dist/
 ```
 
 ## 🖥 Usage Guide
 
-1. **Launch**: The app lives in the top menu bar, displaying a battery icon and percentage.
-2. **View Details**: Click the menu bar icon to expand the detailed information panel.
-3. **Switch Views**:
-   - **App Energy History**: View per-app energy contribution curves for the past 36 hours.
-   - **Active Apps**: View apps currently running and consuming CPU.
-4. **More Settings**:
-   - **Right-click** the menu bar icon to access the settings menu.
-   - Configure **Language**, **Launch at Login**, or **Export Energy Report** (CSV/JSON).
+1. **Launch**: menu‑bar icon shows battery percent  
+2. **View Details**: click to open the panel  
+3. **Switch Views**: energy history / active apps  
+4. **Settings**: right‑click for language, launch at login, export reports  
 
-## ⚠️ Known Issues & Limitations
+## ⚠️ Known Limits
 
-- **System Process Permissions**: Detailed energy data for some system-level processes (like `kernel_task`) may be restricted due to macOS sandboxing mechanisms.
-- **Refresh Rate**: To ensure low power consumption, the background refresh rate is limited to once per minute, meaning historical data granularity is minute-level.
+- Some system processes are restricted by macOS permissions
+- Background refresh is limited to once per minute for low power
 
 ## ☕️ Support
 
-If you find this app helpful, please consider supporting its development!
+If this tool helps you, consider supporting the project!
 
 <div align="center">
   <img src="sponsers/WeChat.JPG" alt="WeChat Pay" width="200" style="margin-right: 20px;" />
@@ -104,17 +104,16 @@ If you find this app helpful, please consider supporting its development!
 
 ## 🤝 Contribution
 
-We welcome community contributions! If you have ideas for reporting bugs or submitting Pull Requests:
-
-1. Fork the repository.
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`).
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`).
-4. Push to the branch (`git push origin feature/AmazingFeature`).
-5. Open a Pull Request.
+We welcome contributions:
+1. Fork the repo
+2. Create a branch (`git checkout -b feature/AmazingFeature`)
+3. Commit changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
 ## 📄 License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+MIT License. See [LICENSE](LICENSE) for details.
 
 ---
 Copyright © 2026 Lyon. All rights reserved.
